@@ -42,6 +42,7 @@ var dx = [4]int{-1, 1, 0, 0}
 var dy = [4]int{0, 0, 1, -1}
 var row, col int
 
+//bfs
 func numIslands(grid [][]byte) int {
 	row = len(grid)
 	if row == 0 {
@@ -61,6 +62,113 @@ func numIslands(grid [][]byte) int {
 		}
 	}
 	return ans
+}
+
+// dfs
+func numIslandsDfs(grid [][]byte) int {
+	row = len(grid)
+	if row == 0 {
+		return 0
+	}
+	col = len(grid[0])
+	// 岛屿个数
+	ans := 0
+	// 遍历grid
+	for i, v := range grid {
+		for j, vv := range v {
+			// 是陆地
+			if vv == '1' {
+				dfs(grid, i, j)
+				ans++
+			}
+		}
+	}
+	return ans
+}
+
+type UnionFind struct {
+	count  int   // 联通数量
+	rank   []int // 层级
+	parent []int // 上一级
+}
+
+// 并查集初始化方法
+func (uf *UnionFind) Init(grid [][]byte) {
+	uf.count = 0
+	m := len(grid)
+	n := len(grid[0])
+	uf.parent = make([]int, n*m)
+	uf.rank = make([]int, n*m)
+	for i := 0; i < m; i++ {
+		for j := 0; j < n; j++ {
+			if grid[i][j] == '1' {
+				// 将其上级设为自己
+				uf.parent[i*n+j] = i*n + j
+				// 节点数量+1
+				uf.count++
+			}
+			// 当前层级置0
+			uf.rank[i*n+j] = 0
+		}
+	}
+}
+
+// 路径查找方法
+func (uf *UnionFind) find(i int) int {
+	// 上级并不等与自己
+	if uf.parent[i] != i {
+		// 继续查找其下级 压缩路径
+		uf.parent[i] = uf.find(uf.parent[i])
+	}
+	return uf.parent[i]
+}
+
+// 合并集合
+func (uf *UnionFind) union(x, y int) {
+	// 获取集合x y的最上级集合
+	rootX := uf.find(x)
+	rootY := uf.find(y)
+	if rootX != rootY {
+		if uf.rank[rootX] > uf.rank[rootY] {
+			uf.parent[rootY] = rootX
+		} else if uf.rank[rootX] < uf.rank[rootY] {
+			uf.parent[rootY] = rootX
+		} else {
+			uf.parent[rootY] = rootX
+			uf.rank[rootX] += 1
+		}
+		uf.count -= 1
+	}
+}
+
+// 并查集
+func numIslandsUnionFindSet(grid [][]byte) int {
+	row := len(grid)
+	if row == 0 {
+		return 0
+	}
+	col := len(grid[0])
+	// 初始化并查集
+	unionFind := &UnionFind{}
+	unionFind.Init(grid)
+	// 遍历数组 当前节点时且下、右节点是陆地的进行合并
+	for i := 0; i < row; i++ {
+		for j := 0; j < col; j++ {
+			if grid[i][j] == '1' {
+				// 已遍历将此处变为水
+				grid[i][j] = 0
+				for m := 0; m < 4; m++ {
+					ii := i + dx[m]
+					jj := j + dy[m]
+					if ii >= 0 && ii < row && jj >= 0 && jj < col && grid[ii][jj] == '1' {
+						// 将当前节点与四周陆地节点合并
+						unionFind.union(i*col+j, ii*col+jj)
+					}
+				}
+			}
+		}
+	}
+	return unionFind.count
 }
 
 func bfs(grid [][]byte, i, j int) {
@@ -85,7 +193,20 @@ func bfs(grid [][]byte, i, j int) {
 	}
 }
 
+func dfs(grid [][]byte, i, j int) {
+	// 遍历过则将此区域变为水
+	grid[i][j] = '0'
+	// 对上下左右大陆节点进行dfs
+	for m := 0; m < 4; m++ {
+		ii := i + dx[m]
+		jj := j + dy[m]
+		if ii >= 0 && ii < row && jj >= 0 && jj < col && grid[ii][jj] == '1' {
+			dfs(grid, ii, jj)
+		}
+	}
+}
+
 func TestNumIsLands(t *testing.T) {
-	fmt.Println(numIslands([][]byte{{'1', '1', '1', '1', '0'}, {'1', '1', '0', '1', '0'}, {'1', '1', '0', '0', '0'}, {'0', '0', '0', '0', '0'}}))
-	fmt.Println(numIslands([][]byte{{'1', '1', '0', '0', '0'}, {'1', '1', '0', '0', '0'}, {'0', '0', '1', '0', '0'}, {'0', '0', '0', '1', '1'}}))
+	fmt.Println(numIslandsUnionFindSet([][]byte{{'1', '1', '1', '1', '0'}, {'1', '1', '0', '1', '0'}, {'1', '1', '0', '0', '0'}, {'0', '0', '0', '0', '0'}}))
+	fmt.Println(numIslandsUnionFindSet([][]byte{{'1', '1', '0', '0', '0'}, {'1', '1', '0', '0', '0'}, {'0', '0', '1', '0', '0'}, {'0', '0', '0', '1', '1'}}))
 }
