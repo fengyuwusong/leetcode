@@ -1,8 +1,7 @@
-package medium
+package main
 
 import (
 	"fmt"
-	"testing"
 )
 
 /**
@@ -30,11 +29,11 @@ import (
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 */
 
-// 解法 滑动窗口 + hash 时间
+// 解法 滑动窗口 + hash 时间复杂度O(n)
 func lengthOfLongestSubstring(s string) int {
 	var right, ans int
 	nums := make([]int, 256)
-	// 依次移动左指针
+	// 依次移动左指针 计算每个位置的
 	for left := 0; left < len(s) && right < len(s); left++ {
 		// 移动右指针直至出现重复值
 		for right < len(s) && nums[s[right]] == 0 {
@@ -45,13 +44,13 @@ func lengthOfLongestSubstring(s string) int {
 		if right-left > ans {
 			ans = right - left
 		}
-		// 进入下一次遍历左指针+1 去除当前左指针次数
+		// 进入下一次遍历左指针+1 及去除左指针首字母，重新开始计算左右区间下一个无重复字符的最长子串
 		nums[s[left]]--
 	}
 	return ans
 }
 
-func TestLengthOfLongestSubstring(t *testing.T) {
+func main() {
 	fmt.Println(lengthOfLongestSubstring("abcabcbb"))
 	fmt.Println(lengthOfLongestSubstring("bbbbb"))
 	fmt.Println(lengthOfLongestSubstring("pwwkew"))
