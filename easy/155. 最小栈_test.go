@@ -16,7 +16,7 @@ type MinStack struct {
 }
 
 /** initialize your data structure here. */
-func Constructor() MinStack {
+func ConstructorStack() MinStack {
 	return MinStack{
 		stack:    []int{},
 		minStack: []int{math.MaxInt64}, // 此处需初始化一个值 预防第一个元素入栈比较
@@ -50,7 +50,7 @@ func min(x, y int) int {
 }
 
 func TestStack(t *testing.T) {
-	stack := Constructor()
+	stack := ConstructorStack()
 	stack.Push(1)
 	stack.Push(2)
 	stack.Push(3)

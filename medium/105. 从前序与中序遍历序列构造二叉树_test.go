@@ -40,7 +40,7 @@ type TreeNode struct {
 //  并依次对栈顶和 index 节点(当前根节点 由中序遍历决定) 进行比较
 //  不相等相等则为当前根节点的左儿子
 //  相等则为当前节点的右儿子 并弹出重取当前根节点
-func buildTree(preorder []int, inorder []int) *TreeNode {
+func buildTree105(preorder []int, inorder []int) *TreeNode {
 	hashData := make(map[int]int, len(preorder))
 	// 构建中序序列hash表
 	for i, v := range inorder {
@@ -59,8 +59,8 @@ func buildTree(preorder []int, inorder []int) *TreeNode {
 		// preorder[1:rootIndex+1] => 去除根节点到中序遍历位置(长度) 其他区域类似 可画图观察
 		return &TreeNode{
 			Val:   preorder[0],
-			Left:  buildTree(preorder[1:rootIndex+1], inorder[:rootIndex]),
-			Right: buildTree(preorder[rootIndex+1:], inorder[rootIndex+1:]),
+			Left:  buildTree105(preorder[1:rootIndex+1], inorder[:rootIndex]),
+			Right: buildTree105(preorder[rootIndex+1:], inorder[rootIndex+1:]),
 		}
 	}
 	return bTree(preorder, inorder)
@@ -68,6 +68,6 @@ func buildTree(preorder []int, inorder []int) *TreeNode {
 
 func TestBuildTree(t *testing.T) {
 	//fmt.Println(buildTree([]int{3, 9, 20, 15, 7}, []int{9, 3, 15, 20, 7}))
-	node := buildTree([]int{1, 2, 3, 4, 5, 6, 7, 8}, []int{3, 2, 5, 4, 1, 7, 6, 8})
+	node := buildTree105([]int{1, 2, 3, 4, 5, 6, 7, 8}, []int{3, 2, 5, 4, 1, 7, 6, 8})
 	fmt.Println(node)
 }

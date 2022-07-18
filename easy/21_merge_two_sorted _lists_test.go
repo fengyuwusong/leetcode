@@ -20,10 +20,10 @@ Output: 1->1->2->3->4->4
 */
 
 //Definition for singly-linked queue.
-type ListNode struct {
-	Val  int
-	Next *ListNode
-}
+//type ListNode struct {
+//	Val  int
+//	Next *ListNode
+//}
 
 // 循环遍历合并即可
 func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
